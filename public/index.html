@@ -1,108 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>ibiu-space</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>IBIU</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
 canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.aurora{position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 50%,rgba(30,60,120,.1) 0%,transparent 50%),radial-gradient(ellipse at 70% 20%,rgba(80,20,80,.06) 0%,transparent 50%);z-index:0;animation:auroraShift 20s ease-in-out infinite}
+@keyframes auroraShift{0%,100%{transform:translate(0,0)}25%{transform:translate(2%,1%)}50%{transform:translate(-1%,-2%)}75%{transform:translate(-2%,1%)}}
 #login-screen{position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
-#globe-container{width:220px;height:220px;margin-bottom:10px;flex-shrink:0}
-#globe-container canvas{width:100%!important;height:100%!important;position:static!important}
-.brand{color:#fff;font-size:clamp(28px,8vw,42px);font-weight:700;letter-spacing:3px;text-align:center;text-transform:lowercase;margin-bottom:4px;opacity:0;animation:fadeInDown .8s ease forwards}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-.hero{text-align:center;margin-bottom:6px}
-.hero h1{color:#fff;font-size:clamp(13px,3.2vw,17px);font-weight:400;letter-spacing:1px;margin:0;opacity:0;animation:slideInRight .8s ease .6s forwards}
-.hero p{color:rgba(255,255,255,0.6);font-size:clamp(10px,2.3vw,12px);font-weight:300;margin-top:2px;opacity:0;animation:slideInRight .8s ease 1s forwards}
-.hero .extra{color:rgba(255,255,255,0.5);font-size:clamp(9px,2vw,11px);font-weight:300;margin-top:2px;opacity:0;animation:slideInRight .8s ease 1.4s forwards}
-@keyframes slideInRight{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
-.welcome-text{color:#d4af37;font-size:clamp(18px,5vw,26px);font-weight:600;letter-spacing:2px;text-align:center;margin-bottom:12px;animation:goldPulse 2s ease-in-out infinite}
-@keyframes goldPulse{0%,100%{text-shadow:0 0 10px rgba(212,175,55,0.4)}50%{text-shadow:0 0 25px rgba(212,175,55,0.9)}}
-.input-group{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
-.input-wrapper{position:relative;width:100%}
-.input-wrapper .at-symbol{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#d4af37;font-size:16px;z-index:2;pointer-events:none}
-.input-wrapper input{width:100%;padding:14px 16px 14px 32px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:15px;outline:none;transition:all .3s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.input-wrapper input:focus{border-color:#d4af37;box-shadow:0 0 20px rgba(212,175,55,0.2);background:rgba(255,255,255,0.08)}
-.input-wrapper input::placeholder{color:rgba(255,255,255,0.35)}
-.moon-btn{width:70px;height:70px;border-radius:50%;border:none;background:radial-gradient(circle at 35% 35%,#f5f5dc,#d4af37,#8b6914);cursor:pointer;font-size:11px;font-weight:700;color:#1a1a1a;letter-spacing:1px;box-shadow:0 0 30px rgba(212,175,55,0.5),0 0 60px rgba(212,175,55,0.2);transition:all .3s;position:relative;overflow:hidden;text-transform:uppercase}
-.moon-btn::after{content:'';position:absolute;width:12px;height:12px;background:rgba(0,0,0,0.2);border-radius:50%;top:18px;right:16px}
-.moon-btn:active{transform:scale(0.92);box-shadow:0 0 50px rgba(212,175,55,0.8)}
-.signup-link{color:rgba(255,255,255,0.5);font-size:12px;margin-top:8px;cursor:pointer;transition:color .3s}
+.brand{color:#fff;font-size:clamp(34px,10vw,52px);font-weight:200;letter-spacing:12px;margin-bottom:8px;opacity:0;animation:fadeInDown .8s ease forwards;user-select:none}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+.hero{text-align:center;margin-bottom:32px}
+.hero h1{color:rgba(255,255,255,.85);font-size:clamp(12px,3vw,15px);font-weight:300;letter-spacing:1.5px;opacity:0;animation:slideIn .8s ease .6s forwards}
+.hero p{color:rgba(255,255,255,.45);font-size:clamp(10px,2.2vw,11px);font-weight:300;margin-top:3px;opacity:0;animation:slideIn .8s ease .9s forwards}
+.hero .trust{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px;opacity:0;animation:fadeIn .8s ease 1.5s forwards}
+@keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.welcome-text{color:#d4af37;font-size:clamp(16px,4.5vw,22px);font-weight:500;letter-spacing:3px;margin-bottom:20px;animation:goldPulse 3s ease-in-out infinite}
+@keyframes goldPulse{0%,100%{text-shadow:0 0 15px rgba(212,175,55,.3)}50%{text-shadow:0 0 35px rgba(212,175,55,.7)}}
+.form-card{width:100%;max-width:340px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:28px 20px;backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.input-group{width:100%;display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+.input-wrapper input{width:100%;padding:15px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;font-size:15px;outline:none;transition:all .3s}
+.input-wrapper input:focus{border-color:rgba(212,175,55,.5);box-shadow:0 0 0 3px rgba(212,175,55,.08),0 0 30px rgba(212,175,55,.1);background:rgba(255,255,255,.06)}
+.input-wrapper input::placeholder{color:rgba(255,255,255,.25);font-weight:300}
+.moon-btn{width:60px;height:60px;border-radius:50%;border:none;background:radial-gradient(circle at 40% 35%,#fff 0%,#f0f0f0 15%,#d4d4d4 35%,#b8b8b8 55%,#888 80%,#555 100%);cursor:pointer;font-size:9px;font-weight:600;color:#333;letter-spacing:2px;box-shadow:0 0 30px rgba(255,255,255,.35),0 0 60px rgba(200,200,200,.12),inset 0 -3px 6px rgba(0,0,0,.2);transition:all .3s;display:block;margin:0 auto}
+.moon-btn:hover{box-shadow:0 0 50px rgba(255,255,255,.55),0 0 100px rgba(200,200,200,.25);transform:scale(1.04)}
+.moon-btn:active{transform:scale(.9)}
+.moon-btn.loading{animation:btnPulse .6s ease-in-out infinite;pointer-events:none;opacity:.7}
+@keyframes btnPulse{0%,100%{box-shadow:0 0 40px rgba(255,255,255,.4)}50%{box-shadow:0 0 80px rgba(255,255,255,.8)}}
+.signup-link{color:rgba(255,255,255,.5);font-size:13px;margin-top:18px;cursor:pointer;text-align:center;transition:color .3s}
 .signup-link:hover{color:#d4af37}
-.error-msg{color:#ff4444;font-size:12px;text-align:center;min-height:18px;margin-top:4px}
-.success-msg{color:#4caf50;font-size:12px;text-align:center;min-height:18px;margin-top:4px}
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100;justify-content:center;align-items:center}
+.error-msg{color:#f44;font-size:11px;text-align:center;min-height:16px;margin-top:8px}
+.success-msg{color:#4caf50;font-size:12px;text-align:center;margin-top:4px}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:100;justify-content:center;align-items:center;backdrop-filter:blur(20px)}
 .modal-overlay.active{display:flex}
-.modal-box{background:#1a1a1e;border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:30px 24px;width:90%;max-width:360px;text-align:center;position:relative;animation:modalIn .3s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(0.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-close{position:absolute;top:12px;right:16px;color:#fff;font-size:22px;cursor:pointer;background:none;border:none}
-.modal-box h2{color:#d4af37;font-size:20px;margin-bottom:16px}
-.modal-box .input-group{margin-bottom:12px}
-.modal-box input{padding-left:16px!important}
-.modal-box .moon-btn{margin:0 auto}
+.modal-box{background:rgba(20,20,25,.95);border:1px solid rgba(212,175,55,.2);border-radius:28px;padding:32px 24px;width:90%;max-width:360px;text-align:center;animation:modalIn .35s ease;box-shadow:0 30px 80px rgba(0,0,0,.7)}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close{position:absolute;top:16px;right:20px;color:rgba(255,255,255,.6);font-size:24px;cursor:pointer;background:none;border:none}
+.modal-box h2{color:#d4af37;font-size:20px;font-weight:400;letter-spacing:2px;margin-bottom:20px}
+.modal-box .moon-btn{width:60px;height:60px;font-size:9px}
+#splash{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
+#splash.hidden{opacity:0;visibility:hidden}
+#splash .splash-brand{color:#d4af37;font-size:36px;font-weight:200;letter-spacing:12px;animation:splashPulse 1.5s ease-in-out infinite}
+@keyframes splashPulse{0%,100%{opacity:.4}50%{opacity:1}}
 </style>
 </head>
 <body>
-<canvas id="stars"></canvas>
+<div id="splash"><div class="splash-brand">IBIU</div></div>
+<div class="aurora"></div><canvas id="stars"></canvas>
 <div id="login-screen">
-<div class="brand">ibiu-space</div>
-<div class="hero"><h1>Where Privacy Meets Simplicity</h1><p>Private messaging designed for people who care about security</p><p class="extra">username based, no limits</p></div>
-<div id="globe-container"></div>
+<div class="brand">IBIU</div>
+<div class="hero">
+<h1>End-to-end encrypted. Username based.</h1>
+<p>No phone number required. Private by default.</p>
+<div class="trust"><span>🔒 End-to-End Encryption</span><span>👤 Username Based</span><span>🛡️ Privacy First</span></div>
+</div>
+<div class="form-card">
 <div class="welcome-text">Welcome</div>
 <div class="input-group">
-<div class="input-wrapper"><span class="at-symbol">@</span><input type="text" id="usernameInput" class="at-input" placeholder="username" autocomplete="off"></div>
+<div class="input-wrapper"><input type="text" id="usernameInput" placeholder="Username" autocomplete="off"></div>
 <div class="input-wrapper"><input type="password" id="passwordInput" placeholder="Password"></div>
 </div>
-<button class="moon-btn" onclick="login()">Enter</button>
+<button class="moon-btn" id="enterBtn" onclick="login()">Enter</button>
 <div class="error-msg" id="errorMsg"></div>
 <div class="signup-link" onclick="openSignup()">Don't have an account? Sign up</div>
+</div>
 </div>
 <div class="modal-overlay" id="signupModal">
 <div class="modal-box">
 <button class="modal-close" onclick="closeSignup()">&times;</button>
 <h2>Create Account</h2>
 <div class="input-group">
-<div class="input-wrapper"><span class="at-symbol">@</span><input type="text" id="signupUsername" class="at-input" placeholder="username" autocomplete="off"></div>
+<div class="input-wrapper"><input type="text" id="signupUsername" placeholder="Username" autocomplete="off"></div>
 <div class="input-wrapper"><input type="password" id="signupPassword" placeholder="Password"></div>
 <div class="input-wrapper"><input type="password" id="signupConfirm" placeholder="Confirm Password"></div>
 </div>
-<button class="moon-btn" onclick="register()" style="font-size:10px">Sign Up</button>
+<button class="moon-btn" id="signupBtn" onclick="register()" style="font-size:9px">Sign Up</button>
 <div class="error-msg" id="signupError"></div>
 <div class="success-msg" id="signupSuccess"></div>
 </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);
 var socket=io();
 (function(){
 var c=document.getElementById('stars'),ctx=c.getContext('2d'),stars=[];
 function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
 resize();window.addEventListener('resize',resize);
-for(var i=0;i<300;i++)stars.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*1.2+0.3,a:Math.random(),s:Math.random()*0.02+0.005});
-function draw(){ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<stars.length;i++){var s=stars[i];s.a+=s.s;var alpha=Math.sin(s.a)*0.5+0.5;ctx.beginPath();ctx.arc(s.x%c.width,s.y%c.height,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+alpha+')';ctx.fill()}requestAnimationFrame(draw)}draw()})();
-(function(){
-var container=document.getElementById('globe-container'),c=document.createElement('canvas');
-c.width=220;c.height=220;container.appendChild(c);var ctx=c.getContext('2d'),dots=[],angle=0;
-for(var i=0;i<700;i++){var lat=Math.asin(2*Math.random()-1),lng=Math.random()*Math.PI*2;dots.push({lat:lat,lng:lng})}
-function drawGlobe(){ctx.clearRect(0,0,c.width,c.height);
-ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.arc(110,110,100,0,Math.PI*2);ctx.fill();
-for(var i=0;i<dots.length;i++){var d=dots[i],x=110+100*Math.cos(d.lat)*Math.cos(d.lng+angle),y=110+100*Math.cos(d.lat)*Math.sin(d.lng+angle),z=100*Math.sin(d.lat);
-if(Math.cos(d.lat)*Math.cos(d.lng+angle)>-0.1){var alpha=0.3+0.7*(z+100)/200;ctx.fillStyle='rgba(212,175,55,'+alpha+')';ctx.beginPath();ctx.arc(x,y,1.4,0,Math.PI*2);ctx.fill()}}
-var grad=ctx.createRadialGradient(90,90,60,110,110,110);grad.addColorStop(0,'rgba(0,0,0,0)');grad.addColorStop(0.5,'rgba(0,0,0,0.15)');grad.addColorStop(1,'rgba(0,0,0,0.55)');
-ctx.beginPath();ctx.arc(110,110,100,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();angle+=0.004;requestAnimationFrame(drawGlobe)}drawGlobe()})();
-(function(){
-var li=document.getElementById('usernameInput'),si=document.getElementById('signupUsername');
-function handleAt(input){input.addEventListener('keydown',function(e){if(input.selectionStart===0&&e.key==='Backspace')e.preventDefault()});input.addEventListener('input',function(){if(!this.value.startsWith('@'))this.value='@'+this.value.replace(/@/g,'')})}
-handleAt(li);handleAt(si);li.value='@';si.value='@'})();
-function login(){var u=document.getElementById('usernameInput').value.trim().replace('@','').toLowerCase(),p=document.getElementById('passwordInput').value.trim();if(!u||!p){document.getElementById('errorMsg').textContent='All fields are required.';return}socket.emit('login',{username:u,password:p})}
-function openSignup(){document.getElementById('signupModal').classList.add('active');document.getElementById('signupUsername').value='@';document.getElementById('signupPassword').value='';document.getElementById('signupConfirm').value='';document.getElementById('signupError').textContent='';document.getElementById('signupSuccess').textContent=''}
+for(var i=0;i<400;i++) stars.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*.9+.15,a:Math.random(),s:Math.random()*.012+.002});
+function draw(){ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<stars.length;i++){var s=stars[i];s.a+=s.s;var alpha=Math.sin(s.a)*.5+.5;ctx.beginPath();ctx.arc(s.x%c.width,s.y%c.height,s.r,0,2*Math.PI);ctx.fillStyle='rgba(255,255,255,'+(alpha*.7)+')';ctx.fill()}requestAnimationFrame(draw)}draw()})();
+function login(){
+var b=document.getElementById('enterBtn');b.classList.add('loading');
+var u=document.getElementById('usernameInput').value.trim().toLowerCase();
+var p=document.getElementById('passwordInput').value.trim();
+if(!u||!p){document.getElementById('errorMsg').textContent='All fields required.';b.classList.remove('loading');return}
+socket.emit('login',{username:u,password:p})}
+function openSignup(){document.getElementById('signupModal').classList.add('active');document.getElementById('signupUsername').value='';document.getElementById('signupPassword').value='';document.getElementById('signupConfirm').value='';document.getElementById('signupError').textContent='';document.getElementById('signupSuccess').textContent=''}
 function closeSignup(){document.getElementById('signupModal').classList.remove('active')}
-function register(){var u=document.getElementById('signupUsername').value.trim().replace('@','').toLowerCase(),p=document.getElementById('signupPassword').value.trim(),c=document.getElementById('signupConfirm').value.trim();document.getElementById('signupError').textContent='';document.getElementById('signupSuccess').textContent='';if(!u||!p||!c){document.getElementById('signupError').textContent='All fields are required.';return}if(p!==c){document.getElementById('signupError').textContent='Passwords do not match.';return}socket.emit('register',{username:u,password:p})}
-socket.on('register-ok',function(msg){document.getElementById('signupSuccess').textContent=msg;setTimeout(function(){closeSignup()},1500)});
-socket.on('error-msg',function(msg){document.getElementById('errorMsg').textContent=msg;document.getElementById('signupError').textContent=msg});
-socket.on('login-ok',function(data){localStorage.setItem('ibiu_user',data.username);window.location.href='/chat'});
+function register(){
+var b=document.getElementById('signupBtn');b.classList.add('loading');
+var u=document.getElementById('signupUsername').value.trim().toLowerCase();
+var p=document.getElementById('signupPassword').value.trim();
+var c=document.getElementById('signupConfirm').value.trim();
+document.getElementById('signupError').textContent='';document.getElementById('signupSuccess').textContent='';
+if(!u||!p||!c){document.getElementById('signupError').textContent='All fields required.';b.classList.remove('loading');return}
+if(p!==c){document.getElementById('signupError').textContent='Passwords do not match.';b.classList.remove('loading');return}
+socket.emit('register',{username:u,password:p})}
+socket.on('register-ok',m=>{document.getElementById('signupSuccess').textContent=m;setTimeout(closeSignup,1500)});
+socket.on('error-msg',m=>{document.getElementById('errorMsg').textContent=m;document.getElementById('signupError').textContent=m;document.getElementById('enterBtn').classList.remove('loading');document.getElementById('signupBtn').classList.remove('loading')});
+socket.on('login-ok',d=>{localStorage.setItem('ibiu_user',d.username);document.body.style.opacity='0';document.body.style.transition='opacity .4s';setTimeout(()=>window.location.href='/chat',400)});
 </script>
 </body>
 </html>
