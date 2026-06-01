@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>چت خصوصی</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0a0a0a; height: 100vh; }
+
+#login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; background: #0a0a0a; padding: 20px; gap: 12px; }
+#login-screen h2 { color: #fff; font-size: 22px; margin-bottom: 10px; }
+#login-screen input { width: 90%; max-width: 320px; padding: 14px; border-radius: 12px; border: none; background: #1c1c1e; color: #fff; font-size: 16px; text-align: center; outline: none; }
+#login-screen button { padding: 14px 50px; border-radius: 12px; border: none; background: #007aff; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+#login-screen button:active { background: #005bb5; }
+
+#chat-screen { display: none; flex-direction: column; height: 100%; background: #0a0a0a; }
+#top-bar { padding: 12px 16px; background: #1c1c1e; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2c2c2e; }
+#top-bar h3 { color: #fff; font-size: 16px; }
+#top-bar button { padding: 6px 14px; border-radius: 16px; border: 1px solid #3a3a3c; background: #2c2c2e; color: #fff; font-size: 12px; cursor: pointer; }
+#online-status { font-size: 11px; color: #34c759; margin-top: 2px; }
+
+#messages-container { flex: 1; overflow-y: auto; padding: 12px 10px; display: flex; flex-direction: column; gap: 4px; }
+.msg-wrapper { display: flex; margin: 2px 0; }
+.msg-wrapper.me { justify-content: flex-end; }
+.msg-wrapper.other { justify-content: flex-start; }
+.msg-content { max-width: 80%; }
+.msg-sender { font-size: 12px; color: #0a84ff; margin-bottom: 2px; padding: 0 8px; }
+.msg-bubble { padding: 10px 14px; border-radius: 18px; font-size: 15px; line-height: 1.5; word-wrap: break-word; display: inline-block; }
+.me .msg-bubble { background: #007aff; color: #fff; border-bottom-right-radius: 4px; }
+.other .msg-bubble { background: #262628; color: #e5e5ea; border-bottom-left-radius: 4px; }
+.msg-time { font-size: 10px; color: #8e8e93; margin-top: 3px; padding: 0 8px; }
+.me .msg-time { text-align: left; }
+.other .msg-time { text-align: right; }
+.msg-bubble img { max-width: 220px; border-radius: 12px; display: block; cursor: pointer; }
+.msg-bubble video { max-width: 220px; border-radius: 12px; display: block; }
+.msg-bubble audio { max-width: 200px; display: block; }
+.msg-file { display: flex; align-items: center; gap: 10px; padding: 8px; background: rgba(255,255,255,0.08); border-radius: 10px; margin-top: 4px; }
+.msg-file a { color: #fff; text-decoration: none; font-size: 13px; word-break: break-all; }
+.msg-file span { font-size: 20px; }
+
+#bottom-bar { padding: 8px 10px; background: #1c1c1e; display: flex; gap: 6px; align-items: center; border-top: 1px solid #2c2c2e; }
+#bottom-bar input[type="text"] { flex: 1; padding: 10px 16px; border-radius: 20px; border: 1px solid #3a3a3c; background: #0a0a0a; color: #fff; font-size: 15px; outline: none; }
+#bottom-bar button { width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+#attachBtn { background: #2c2c2e; color: #fff; }
+#attachBtn:active { background: #3a3a3c; }
+#sendBtn { background: #007aff; color: #fff; }
+#sendBtn:active { background: #005bb5; }
+#fileInput { display: none; }
+#typing-indicator { font-size: 11px; color: #8e8e93; padding: 2px 16px; min-height: 18px; background: #0a0a0a; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+    <h2>💬 چت خصوصی</h2>
+    <input id="nameInput" type="text" placeholder="اسم خودت رو بنویس">
+    <input id="passInput" type="password" placeholder="رمز عبور">
+    <button onclick="joinChat()">ورود به چت</button>
+</div>
+
+<div id="chat-screen">
+    <div id="top-bar">
+        <div>
+            <h3>چت خصوصی</h3>
+            <div id="online-status">آنلاین</div>
+        </div>
+        <button onclick="changeName()">✏️ تغییر اسم</button>
+    </div>
+    <div id="messages-container"></div>
+    <div id="typing-indicator"></div>
+    <div id="bottom-bar">
+        <button id="attachBtn" onclick="document.getElementById('fileInput').click()">📎</button>
+        <input type="file" id="fileInput" onchange="sendFile()" accept="*/*" multiple>
+        <input type="text" id="msgInput" placeholder="پیام..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}">
+        <button id="sendBtn" onclick="sendMsg()">➤</button>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io();
+var myName = '';
+
+function joinChat() {
+    var name = document.getElementById('nameInput').value.trim();
+    var pass = document.getElementById('passInput').value;
+    if (!pass) { alert('رمز عبور رو وارد کن'); return; }
+    socket.emit('join', { name: name, pass: pass });
+}
+
+socket.on('ok', function(data) {
+    myName = data.name;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('chat-screen').style.display = 'flex';
+    data.messages.forEach(function(m) {
+        addMessage(m, m.user === myName);
+    });
+    scrollToBottom();
+});
+
+socket.on('error', function(msg) {
+    alert(msg);
+});
+
+function sendMsg() {
+    var input = document.getElementById('msgInput');
+    var text = input.value.trim();
+    if (!text) return;
+    socket.emit('msg', text);
+    input.value = '';
+    input.focus();
+}
+
+socket.on('msg', function(m) {
+    addMessage(m, m.user === myName);
+    scrollToBottom();
+});
+
+function sendFile() {
+    var files = document.getElementById('fileInput').files;
+    if (files.length === 0) return;
+    Array.from(files).forEach(function(file) {
+        if (file.size > 100 * 1024 * 1024) {
+            alert('فایل ' + file.name + ' بزرگتر از ۱۰۰ مگابایته');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            socket.emit('file', {
+                name: file.name,
+                data: e.target.result,
+                mime: file.type
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    });
+    document.getElementById('fileInput').value = '';
+}
+
+socket.on('file', function(m) {
+    addMessage(m, m.user === myName);
+    scrollToBottom();
+});
+
+function addMessage(m, isMe) {
+    var container = document.getElementById('messages-container');
+    var wrapper = document.createElement('div');
+    wrapper.className = 'msg-wrapper ' + (isMe ? 'me' : 'other');
+
+    var content = document.createElement('div');
+    content.className = 'msg-content';
+
+    if (!isMe) {
+        var sender = document.createElement('div');
+        sender.className = 'msg-sender';
+        sender.textContent = m.user;
+        content.appendChild(sender);
+    }
+
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+
+    if (m.type === 'text') {
+        bubble.textContent = m.text;
+    } else if (m.type === 'file') {
+        var fileDiv = document.createElement('div');
+        fileDiv.className = 'msg-file';
+
+        var icon = document.createElement('span');
+        if (m.mime && m.mime.startsWith('image/')) {
+            var img = document.createElement('img');
+            img.src = m.fileUrl;
+            img.onclick = function() { window.open(m.fileUrl); };
+            bubble.appendChild(img);
+            icon.textContent = '🖼️';
+        } else if (m.mime && m.mime.startsWith('video/')) {
+            var vid = document.createElement('video');
+            vid.src = m.fileUrl;
+            vid.controls = true;
+            bubble.appendChild(vid);
+            icon.textContent = '🎬';
+        } else if (m.mime && m.mime.startsWith('audio/')) {
+            var aud = document.createElement('audio');
+            aud.src = m.fileUrl;
+            aud.controls = true;
+            bubble.appendChild(aud);
+            icon.textContent = '🎵';
+        } else {
+            icon.textContent = '📄';
+        }
+
+        fileDiv.appendChild(icon);
+        var link = document.createElement('a');
+        link.href = m.fileUrl;
+        link.download = m.fileName;
+        link.textContent = m.fileName;
+        fileDiv.appendChild(link);
+        bubble.appendChild(fileDiv);
+    }
+
+    content.appendChild(bubble);
+
+    var time = document.createElement('div');
+    time.className = 'msg-time';
+    time.textContent = m.time || '';
+    content.appendChild(time);
+
+    wrapper.appendChild(content);
+    container.appendChild(wrapper);
+}
+
+function scrollToBottom() {
+    var container = document.getElementById('messages-container');
+    setTimeout(function() {
+        container.scrollTop = container.scrollHeight;
+    }, 50);
+}
+
+socket.on('user-joined', function(name) {
+    document.getElementById('online-status').textContent = '🔵 ' + name + ' آنلاین شد';
+    setTimeout(function() {
+        document.getElementById('online-status').textContent = 'آنلاین';
+    }, 3000);
+});
+
+socket.on('user-left', function(name) {
+    document.getElementById('online-status').textContent = '⚫ ' + name + ' خارج شد';
+    setTimeout(function() {
+        document.getElementById('online-status').textContent = 'آنلاین';
+    }, 3000);
+});
+
+function changeName() {
+    var newName = prompt('اسم جدیدت رو بنویس:');
+    if (newName && newName.trim()) {
+        socket.emit('set-name', newName.trim());
+    }
+}
+
+socket.on('name-changed', function(data) {
+    if (data.old === myName) myName = data.new;
+    document.getElementById('online-status').textContent = data.old + ' → ' + data.new;
+    setTimeout(function() {
+        document.getElementById('online-status').textContent = 'آنلاین';
+    }, 3000);
+});
+</script>
+</body>
+</html>
